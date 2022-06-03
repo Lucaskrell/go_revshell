@@ -15,7 +15,7 @@ import (
 
 func main() {
 	// daemonize()
-	connectToClient("192.168.1.24", 1111)
+	connectToClient("localhost", 1111)
 }
 
 func daemonize() {
