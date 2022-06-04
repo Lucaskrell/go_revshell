@@ -20,7 +20,7 @@ const banner string = `
 `
 
 func main() {
-	keepConnexionAlive("192.168.1.24", 1111)
+	keepConnexionAlive("localhost", 1111)
 }
 
 func keepConnexionAlive(host string, port int) {
