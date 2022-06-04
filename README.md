@@ -17,4 +17,3 @@
 ## To-Do
 
 - Generate Reverse Shell file using user arguments (client IP, client port)
-- Full TTY shell
