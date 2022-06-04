@@ -21,7 +21,7 @@ const banner string = `
 `
 
 func main() {
-	connectToClient("192.168.1.24", 1111)
+	connectToClient("localhost", 1111)
 }
 
 func connectToClient(host string, port int) {
