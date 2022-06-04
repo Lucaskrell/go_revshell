@@ -1,5 +1,7 @@
 # Go-RevShell
 
+<img src="https://go.dev/images/gophers/pilot-bust.svg" width="200" height="200" align="right">
+
 ## Usage
 
 1. Pull le repo et aller dans le dossier du repo
