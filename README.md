@@ -50,6 +50,7 @@ Pure standard Golang implementation of a reverse-shell generator and a tcp liste
 
 * More tests across differents os
 * Add Windows payloads for pty
-* Anon screenshots
+* Publish package
+* Refresh and anon screenshots
 
 **[`^        back to top        ^`](#)**
