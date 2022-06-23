@@ -48,9 +48,9 @@ Pure standard Golang implementation of a reverse-shell generator and a tcp liste
 
 ## Todo List
 
-* More tests across differents os
 * Fix pty shell
-* Add Windows payloads for pty eventually
-* Anon screenshots
+* More tests across different os
+* Refresh and anon screenshots
+* Publish package
 
 **[`^        back to top        ^`](#)**
