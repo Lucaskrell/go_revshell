@@ -51,6 +51,6 @@ Pure standard Golang implementation of a reverse-shell generator and a tcp liste
 * Fix pty shell
 * More tests across different os
 * Refresh and anon screenshots
-* Publish package
+* Publish package and refresh ##Usage
 
 **[`^        back to top        ^`](#)**
