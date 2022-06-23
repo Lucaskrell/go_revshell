@@ -3,7 +3,7 @@
 Go-RevShell
 =======
 
-Pure standard Golang implementation of a reverse-shell generator and a tcp listener.
+Pure standard Golang implementation of a reverse-shell generator and a tcp listener. PTY RevShell not ready.
 
 ## Table of content
 - [Go-RevShell](#go-revshell)
@@ -49,7 +49,8 @@ Pure standard Golang implementation of a reverse-shell generator and a tcp liste
 ## Todo List
 
 * More tests across differents os
-* Add Windows payloads for pty
+* Fix pty shell
+* Add Windows payloads for pty eventually
 * Anon screenshots
 
 **[`^        back to top        ^`](#)**

