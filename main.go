@@ -72,31 +72,28 @@ func listenTcp(port string) {
 	defer listener.Close()
 	connexion, err := listener.Accept()
 	handleError("Accepting connection", err)
-	chan_stdout := synchronizeClientServer(connexion, os.Stdout)
-	chan_stdin := synchronizeClientServer(os.Stdin, connexion)
+	stdin_chan, stdout_chan := make(chan int), make(chan int)
+	go synchronizeClientServer(connexion, os.Stdout, stdout_chan)
+	go synchronizeClientServer(os.Stdin, connexion, stdin_chan)
 	select {
-	case <-chan_stdout:
+	case <-stdout_chan:
 		println("[-] Remote connection is closed.")
-	case <-chan_stdin:
-		println("[-] Local connection is closed.") // Should not happen as connexion is at the server initiative, so closing is too
+	case <-stdin_chan:
+		println("[-] Local connection is closed.") // Should not happen as you are closing the connexion from the server
 	}
 }
 
-func synchronizeClientServer(source io.Reader, destination io.Writer) <-chan int {
+func synchronizeClientServer(source io.Reader, destination io.Writer, sync_channel chan int) {
 	buffer := make([]byte, 1024)
-	sync_channel := make(chan int)
-	go func() {
-		for {
-			nBytes, err := source.Read(buffer)
-			if err != nil {
-				break
-			}
-			_, err = destination.Write(buffer[0:nBytes])
-			handleError("Write to remote", err)
+	for {
+		nBytes, err := source.Read(buffer)
+		if err != nil {
+			break
 		}
-		sync_channel <- 0
-	}()
-	return sync_channel
+		_, err = destination.Write(buffer[0:nBytes])
+		handleError("Write to remote", err)
+	}
+	close(sync_channel)
 }
 
 func handleError(reason string, err error) {
