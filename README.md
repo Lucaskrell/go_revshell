@@ -1,6 +1,6 @@
 ![Go-RevShell-Banner](img/Go-RevShell-Banner.jpeg)
 
-Go-RevShell
+Go-RevShell NOT STABLE - LINUX VERSION TO BE TESTED
 =======
 
 Pure standard Golang implementation of a reverse-shell generator and a tcp listener. PTY RevShell not ready.
