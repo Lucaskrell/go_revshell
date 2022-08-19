@@ -3,7 +3,7 @@
 Go-RevShell
 =======
 
-Pure standard Golang implementation of a reverse-shell generator and a netcat like tcp listener to attach the shell without any executable.
+Pure standard Golang implementation of a reverse-shell generator and a netcat like tcp listener to attach the shell without any other piece of code. Made by a student for educational purposes only.
 
 ## Table of content
 - [Go-RevShell](#go-revshell)
