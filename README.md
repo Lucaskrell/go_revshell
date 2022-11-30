@@ -35,7 +35,6 @@ Pure standard Golang implementation of a reverse-shell generator and a netcat li
 ### Attach to reverse shell
 
 * Listen on port 1111 ```go run main.go -l 1111```
-* Listen on port 3412 ```go run main.go -l 3412```
 
 ## Screenshots
 
@@ -44,7 +43,6 @@ Pure standard Golang implementation of a reverse-shell generator and a netcat li
 
 ## Todo List
 
-* Refresh attach screenshot with a windows host
 * Publish package
 
 **[`^        back to top        ^`](#)**
