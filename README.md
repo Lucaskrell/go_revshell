@@ -6,7 +6,7 @@ Go-RevShell
 Pure standard Golang implementation of a reverse-shell generator and a netcat like tcp listener to attach the shell without any other piece of code. Made by a student for educational purposes only.
 
 ## Why
-As an infosec student, I had to bypass some EDR and antivirus sec solutions (see the "Go further" section). So I needed this kind of software which I could not find easily on the web, so I built this.
+As an infosec student, I had to bypass some EDR and antivirus solutions (see the "Go further" section). So I needed this kind of software which I could not find easily on the web, so I built this.
 
 ## Usage
 ```text
