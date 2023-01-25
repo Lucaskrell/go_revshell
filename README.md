@@ -37,11 +37,11 @@ As an infosec student, I had to bypass some EDR and antivirus solutions (see the
 
 ## Go further
 Some ideas to go further using this tool :
-- Avoid signatures (build your own template)
-- Obfuscate your code (decrease lisibility)
+- Avoid signatures (build your own unique code)
+- Obfuscate your code
 - Pack your shell (ie. https://github.com/EgeBalci/amber)
 - Add anti-vm tricks to your shell template
-- Self-modifying code
+- Self-modifying reverse-shell code
 - ...
 
 ## Todo List
