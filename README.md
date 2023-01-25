@@ -5,14 +5,8 @@ Go-RevShell
 
 Pure standard Golang implementation of a reverse-shell generator and a netcat like tcp listener to attach the shell without any other piece of code. Made by a student for educational purposes only.
 
-## Table of content
-- [Go-RevShell](#go-revshell)
-  - [Table of content](#table-of-content)
-  - [Usage](#usage)
-    - [Build a reverse shell](#build-a-reverse-shell)
-    - [Attach to reverse shell](#attach-to-reverse-shell)
-  - [Screenshots](#screenshots)
-  - [Todo List](#todo-list)
+## Why
+As an infosec student, I had to bypass some EDR and antivirus sec solutions (see the "Go further" section). So I needed this kind of software which I could not find easily on the web, so I built this.
 
 ## Usage
 ```text
@@ -40,6 +34,15 @@ Pure standard Golang implementation of a reverse-shell generator and a netcat li
 
 ![Go-RevShell-Generate](img/Go-RevShell-Generate.png)
 ![Go-RevShell-Attach](img/Go-RevShell-Attach.png)
+
+## Go further
+Some ideas to go further using this tool :
+- Avoid signatures (build your own template)
+- Obfuscate your code (decrease lisibility)
+- Pack your shell (ie. https://github.com/EgeBalci/amber)
+- Add anti-vm tricks to your shell template
+- Self-modifying code
+- ...
 
 ## Todo List
 
