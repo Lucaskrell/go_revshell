@@ -38,9 +38,9 @@ As an infosec student, I had to bypass some EDR and antivirus solutions (see the
 ## Go further
 Some ideas to go further using this tool :
 - Avoid signatures (build your own unique code)
-- Obfuscate your code
-- Pack your shell (ie. https://github.com/EgeBalci/amber)
-- Add anti-vm tricks to your shell template
+- Obfuscate your reverse-shell code
+- Pack your reverse-shell executable (ie. https://github.com/EgeBalci/amber)
+- Add anti-vm tricks to your reverse-shell code
 - Self-modifying reverse-shell code
 - ...
 
